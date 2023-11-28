@@ -4,7 +4,7 @@ const cors = require('cors')
 require('dotenv').config()
 
 //Import MongoDB library
-const mongoose = reuire('mongoose');
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 // Connecting to the database
@@ -31,6 +31,12 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+// Creating API
+
+// API 1
+app.get('/api/users', (req, res) => {
+  res.json({ status: 'success' });
+});
 
 
 
