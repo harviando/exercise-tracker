@@ -16,6 +16,15 @@ const UserSchema = new Schema({
 });
 const User = mongoose.model("User", UserSchema);
 
+// Creating Exercise Schema
+const ExerciseSchema = new Schema({
+  user_id: { type: String, required: true },
+  description: String,
+  duration: Number,
+  date: Date,
+});
+const exercise = mongoose.model("Exercise", ExerciseSchema);
+
 app.use(cors())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
