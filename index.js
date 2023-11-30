@@ -44,6 +44,8 @@ app.post('/api/users', async (req, res) => {
   try {
     
     const user = await userObj.save();
+    console.log(user);
+    res.json(user);
     
   } catch (error) {
     
