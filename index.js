@@ -36,23 +36,34 @@ app.get('/', (req, res) => {
 
 // API 1
 app.post('/api/users', async (req, res) => {
-  const user_name = req.body.username;
+  const userName = req.body.username;
   const userObj = new User({
-    username: user_name,
+    username: userName,
   });
   
   try {
-    
     const user = await userObj.save();
     console.log(user);
     res.json(user);
-    
   } catch (error) {
-    
-    console.log(error);
-    
+    console.log(error); 
   }
 });
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const latestUser = await User.findOne().sort({_id: -1}).limit(1);
+
+    if (!latestUser) {
+      res.status(404).json({ message: 'No User found' });
+    }
+    
+    res.status(200).json(latestUser);
+  } catch(error) {
+    console.log(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+})
 
 // [UPDATE] able to save the data on the database but the database name keeps labeled 'test' like wtf change it please
 // [TIMESTAMP] 8:33
