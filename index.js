@@ -27,6 +27,7 @@ const exercise = mongoose.model("Exercise", ExerciseSchema);
 
 app.use(cors())
 app.use(express.static('public'))
+app.use(express.urlencoded({ extended: true })); // middleware to extract req body
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
@@ -34,9 +35,25 @@ app.get('/', (req, res) => {
 // Creating API
 
 // API 1
-app.get('/api/users', (req, res) => {
-  res.json({ status: 'success' });
+app.post('/api/users', async (req, res) => {
+  const user_name = req.body.username;
+  const userObj = new User({
+    username: user_name,
+  });
+  
+  try {
+    
+    const user = await userObj.save();
+    
+  } catch (error) {
+    
+    console.log(error);
+    
+  }
 });
+
+// [UPDATE] able to save the data on the database but the database name keeps labeled 'test' like wtf change it please
+// [TIMESTAMP] 8:33
 
 
 
