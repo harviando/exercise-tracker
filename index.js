@@ -23,7 +23,7 @@ const ExerciseSchema = new Schema({
   duration: Number,
   date: Date,
 });
-const exercise = mongoose.model("Exercise", ExerciseSchema);
+const Exercise = mongoose.model("Exercise", ExerciseSchema);
 
 app.use(cors())
 app.use(express.static('public'))
@@ -50,6 +50,48 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
+app.post('/api/users/:_id/exercises', async (req, res) => {
+  const id = req.params._id;
+  const  { description, duration, date } = req.body;
+
+  try {
+    const user = await User.findById(id);
+    
+    if (!user) {
+      res.send("User not found");
+    } else {
+      const exerciseObj = new Exercise({
+        user_id: user._id,
+        description,
+        duration: parseInt(duration),
+        date: date ? new Date(date) : new Date(),
+      });
+      const exercise = await exerciseObj.save();
+      res.json({
+        _id: user._id,
+        username: user.username,
+        date: new Date(exercise.date).toDateString(),
+        duration: exercise.duration,
+        description: exercise.description,
+      });
+      console.log({
+        _id: user._id,
+        username: user.username,
+        date: new Date(exercise.date).toDateString(),
+        duration: exercise.duration,
+        description: exercise.description,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.send({
+      message: 'Error saving exercise',
+    });
+  }
+});
+
+
+// should be listing all of users
 app.get('/api/users', async (req, res) => {
   try {
     const latestUser = await User.findOne().sort({_id: -1}).limit(1);
@@ -65,8 +107,8 @@ app.get('/api/users', async (req, res) => {
   }
 })
 
-// [UPDATE] able to save the data on the database but the database name keeps labeled 'test' like wtf change it please
-// [TIMESTAMP] 8:33
+// [UPDATE] able to save exercise and console log the result
+// [TIMESTAMP] 15.01
 
 
 
