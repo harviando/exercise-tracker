@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
 
 // Creating API
 
-//GET users
+// GET Users
 app.get('/api/users', async (req, res) => {
   const users = await User.find({}).select('_id username'); // This is like a SQL query that specify which field you want to ouput
   if (!users) {
@@ -44,7 +44,7 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-// API 1
+// POST User
 app.post('/api/users', async (req, res) => {
   const userName = req.body.username;
   const userObj = new User({
@@ -60,6 +60,7 @@ app.post('/api/users', async (req, res) => {
   }
 });
 
+// POST Exercise
 app.post('/api/users/:_id/exercises', async (req, res) => {
   const id = req.params._id;
   const  { description, duration, date } = req.body;
@@ -97,6 +98,55 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
     res.send({
       message: 'Error saving exercise',
     });
+  }
+});
+
+// GET User Logs
+app.get('/api/users/:_id/logs', async (req, res) => {
+  try {
+    // Var to handle the time range
+    const { from, to, limit } = req.query;
+    const id = req.params._id;
+
+    const user = await User.findById(id);
+    if(!user) {
+      res.send("User not found");
+      return;
+    }
+    
+    // Build date filter object
+    const dateObj = {};
+    if (from) {
+      dateObj['$gte'] = new Date(from);
+    }
+    if (to) {
+      dateObj['$lte'] = new Date(to);
+    }
+    let filter = {
+      user_id: id,
+    }
+    if (from || to) {
+      filter.date = dateObj;
+    }
+
+    const exercises = await Exercise.find(filter).limit(+limit ?? 500);
+
+    const log = exercises.map(e => ({
+      description: e.description,
+      duration: e.duration,
+      date: e.date.toDateString()
+    }));
+
+    res.json({
+      username: user.username,
+      count: exercises.length,
+      _id: id,
+      log: log, // Return the re-formatted version of the logs
+    });
+
+    
+  } catch (error) {
+    console.log(error);
   }
 });
 
