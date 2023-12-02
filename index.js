@@ -34,6 +34,16 @@ app.get('/', (req, res) => {
 
 // Creating API
 
+//GET users
+app.get('/api/users', async (req, res) => {
+  const users = await User.find({}).select('_id username'); // This is like a SQL query that specify which field you want to ouput
+  if (!users) {
+    res.send('No users found');
+  } else {
+    res.json(users);
+  }
+});
+
 // API 1
 app.post('/api/users', async (req, res) => {
   const userName = req.body.username;
@@ -91,26 +101,8 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 });
 
 
-// should be listing all of users
-app.get('/api/users', async (req, res) => {
-  try {
-    const latestUser = await User.findOne().sort({_id: -1}).limit(1);
-
-    if (!latestUser) {
-      res.status(404).json({ message: 'No User found' });
-    }
-    
-    res.status(200).json(latestUser);
-  } catch(error) {
-    console.log(error);
-    res.status(500).json({ message: 'Server error' });
-  }
-})
-
 // [UPDATE] able to save exercise and console log the result
 // [TIMESTAMP] 15.01
-
-
 
 
 const listener = app.listen(process.env.PORT || 3000, () => {
